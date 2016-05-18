@@ -10,16 +10,6 @@ import (
 	"github.com/go-martini/martini"
 )
 
-// {
-// "id": "9e5cf2779ffd42f88803477b734eb415"
-// "name": "echo bot"
-// "picture": "http://www.linnrecords.com/img/gallery/6281_LR_Echo_logo_BLACK%20small.jpg"
-// "owner": "ngti"
-// "webhooks": {
-// "message": "http://localhost:3000/message"
-// }-
-// }
-
 const (
 	extensionId = "9e5cf2779ffd42f88803477b734eb415"
 )
@@ -52,11 +42,11 @@ func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultA
 		To:          []string{t.From},
 		Type_:       "chat",
 	})
-	// if err != nil {
-	log.Print("Error sending message request ", err)
-	// } else {
-	log.Print("Sent message", res)
-	// }
+	if err != nil {
+		log.Print("Error sending message request ", err)
+	} else {
+		log.Print("Sent message id:", res)
+	}
 
 }
 
