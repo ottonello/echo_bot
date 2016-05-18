@@ -5,13 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ngti/echo_bot/swagger"
-
 	"github.com/go-martini/martini"
-)
-
-const (
-	extensionId = "9e5cf2779ffd42f88803477b734eb415"
+	"github.com/ngti/echo_bot/swagger"
 )
 
 type IncomingMessage struct {
@@ -26,7 +21,7 @@ type Server struct {
 	m *martini.ClassicMartini
 }
 
-func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultApi) {
+func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultApi, extId *string) {
 	decoder := json.NewDecoder(r.Body)
 	var t IncomingMessage
 	err := decoder.Decode(&t)
@@ -37,7 +32,7 @@ func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultA
 	log.Print("Got message: ", t)
 
 	res, err := api.ApiV1MessagesPost(swagger.Message{
-		ExtensionId: extensionId,
+		ExtensionId: *extId,
 		Body:        t.Body,
 		To:          []string{t.From},
 		Type_:       "chat",
@@ -51,11 +46,11 @@ func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultA
 }
 
 // NewServer creates a new instance that will use the given dependencies.
-func NewServer() *Server {
+func NewServer(extId *string, api *swagger.DefaultApi) *Server {
 	m := martini.Classic()
-	api := swagger.NewDefaultApi()
 
 	m.Map(api)
+	m.Map(extId)
 
 	m.Post("/message", handleMessage)
 

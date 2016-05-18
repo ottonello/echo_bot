@@ -11,12 +11,6 @@ type DefaultApi struct {
 	basePath string
 }
 
-func NewDefaultApi() *DefaultApi {
-	return &DefaultApi{
-		basePath: "http://sducidsettings1:8080",
-	}
-}
-
 func NewDefaultApiWithBasePath(basePath string) *DefaultApi {
 	return &DefaultApi{
 		basePath: basePath,
