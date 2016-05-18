@@ -1,0 +1,14 @@
+hash: 8ca676d96833a962e0744c4eebdffa3baa8ef0cea343466e574309caed3e0bd7
+updated: 2016-05-18T14:29:08.627935+02:00
+imports:
+- name: github.com/codegangsta/inject
+  version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
+- name: github.com/dghubble/sling
+  version: 5765fe1bdc176ae984b074c8a89980d1f16e6dd8
+- name: github.com/go-martini/martini
+  version: 0c6ad5903d2bf9337762caa9c357247279c230c3
+- name: github.com/google/go-querystring
+  version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
+  subpackages:
+  - query
+devImports: []

@@ -1,0 +1,4 @@
+package: github.com/ngti/echo_bot
+import:
+- package: github.com/dghubble/sling
+- package: github.com/go-martini/martini
