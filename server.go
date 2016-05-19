@@ -21,7 +21,7 @@ type Server struct {
 	m *martini.ClassicMartini
 }
 
-func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultApi, extId *string) {
+func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultApi, apiKey *string) {
 	decoder := json.NewDecoder(r.Body)
 	var t IncomingMessage
 	err := decoder.Decode(&t)
@@ -31,11 +31,9 @@ func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultA
 	}
 	log.Print("Got message: ", t)
 
-	res, err := api.ApiV1MessagesPost(swagger.Message{
-		ExtensionId: *extId,
-		Body:        t.Body,
-		To:          []string{t.From},
-		Type_:       "chat",
+	res, err := api.ApiV1MessagesPost(*apiKey, swagger.Message{
+		Body: t.Body,
+		To:   []string{t.From},
 	})
 	if err != nil {
 		log.Print("Error sending message request ", err)
@@ -46,11 +44,11 @@ func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultA
 }
 
 // NewServer creates a new instance that will use the given dependencies.
-func NewServer(extId *string, api *swagger.DefaultApi) *Server {
+func NewServer(apiKey *string, api *swagger.DefaultApi) *Server {
 	m := martini.Classic()
 
 	m.Map(api)
-	m.Map(extId)
+	m.Map(apiKey)
 
 	m.Post("/message", handleMessage)
 

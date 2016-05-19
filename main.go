@@ -14,13 +14,13 @@ func main() {
 		host = os.Getenv("EXTENSION_HOST")
 	}
 
-	extId := "9e5cf2779ffd42f88803477b734eb415"
-	if os.Getenv("ECHO_EXT_ID") != "" {
-		extId = os.Getenv("ECHO_EXT_ID")
+	apiKey := "9e5cf2779ffd42f88803477b734eb415"
+	if os.Getenv("ECHO_API_KEY") != "" {
+		apiKey = os.Getenv("ECHO_API_KEY")
 	}
 
 	api := swagger.NewDefaultApiWithBasePath(host)
-	s := NewServer(&extId, api)
+	s := NewServer(&apiKey, api)
 
 	log.Print("Starting server")
 	// Binds to $PORT

@@ -20,16 +20,17 @@ func NewDefaultApiWithBasePath(basePath string) *DefaultApi {
 /**
  * Send a message
  * Send a message to a set of users
+ * @param apiKey API Key. The API Key identifies the developer and the extension and provides authorization/authentication to access the service. Required.
  * @param message Message to be sent
  * @return MessageResult
  */
-//func (a DefaultApi) ApiV1MessagesPost (message Message) (MessageResult, error) {
-func (a DefaultApi) ApiV1MessagesPost(message Message) (MessageResult, error) {
+//func (a DefaultApi) ApiV1MessagesPost (apiKey string, message Message) (MessageResult, error) {
+func (a DefaultApi) ApiV1MessagesPost(apiKey string, message Message) (MessageResult, error) {
 
 	_sling := sling.New().Post(a.basePath)
 
 	// create path and map variables
-	path := "/extension-service/ws/api/v1/messages"
+	path := "/api/v1/messages"
 
 	_sling = _sling.Path(path)
 
@@ -39,6 +40,8 @@ func (a DefaultApi) ApiV1MessagesPost(message Message) (MessageResult, error) {
 		_sling = _sling.Set("Accept", accepts[key])
 		break // only use the first Accept
 	}
+	// header params "api-key"
+	_sling = _sling.Set("api-key", apiKey)
 
 	// body params
 	_sling = _sling.BodyJSON(message)
