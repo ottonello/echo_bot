@@ -30,7 +30,7 @@ func (a DefaultApi) ApiV1MessagesPost(apiKey string, message Message) (MessageRe
 	_sling := sling.New().Post(a.basePath)
 
 	// create path and map variables
-	path := "/api/v1/messages"
+	path := "extension-service/ws/api/v1/messages"
 
 	_sling = _sling.Path(path)
 
