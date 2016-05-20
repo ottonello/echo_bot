@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
 	"github.com/go-martini/martini"
+	"github.com/ngti/echo_bot/chatbots"
 	"github.com/ngti/echo_bot/swagger"
 )
 
@@ -21,34 +23,18 @@ type Server struct {
 	m *martini.ClassicMartini
 }
 
-func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultApi, apiKey *string) {
-	decoder := json.NewDecoder(r.Body)
-	var t IncomingMessage
-	err := decoder.Decode(&t)
-
-	if err != nil {
-		log.Print("Error decoding message:", r.Body)
-	}
-	log.Print("Got message: ", t)
-
-	res, err := api.ApiV1MessagesPost(*apiKey, swagger.Message{
-		Body: t.Body,
-		To:   []string{t.From},
-	})
-	if err != nil {
-		log.Print("Error sending message request ", err)
-	} else {
-		log.Print("Sent message id:", res)
-	}
-
+type config struct {
+	apiKey string
+	bot    bots.ChatBot
 }
 
-// NewServer creates a new instance that will use the given dependencies.
-func NewServer(apiKey *string, api *swagger.DefaultApi) *Server {
+func NewServer(apiKey string, api *swagger.DefaultApi) *Server {
 	m := martini.Classic()
 
+	bot := bots.NewEchoBot()
+	conf := &config{apiKey, *bot}
 	m.Map(api)
-	m.Map(apiKey)
+	m.Map(conf)
 
 	m.Post("/message", handleMessage)
 
@@ -58,4 +44,45 @@ func NewServer(apiKey *string, api *swagger.DefaultApi) *Server {
 // Run starts listening to HTTP requests to port 3000 or to the port defined in the environment variable PORT.
 func (server *Server) Run() {
 	server.m.Run()
+}
+
+func handleMessage(w http.ResponseWriter, r *http.Request, api *swagger.DefaultApi, config *config) {
+	err, jsonMsg := decode(r.Body)
+
+	if err != nil {
+		log.Panic("Error decoding message: ", r.Body, err)
+	}
+	log.Print("Got message: ", jsonMsg)
+
+	err, response := config.bot.ReceivedMessage(jsonMsg.From, jsonMsg.Body)
+
+	if err != nil {
+		log.Panic("Error processing message: ", r.Body, err)
+	}
+	if response != "" {
+		reply(jsonMsg.From, response, *api, *config)
+	}
+}
+
+func reply(to string, msg string, api swagger.DefaultApi, config config) {
+	log.Print("Replying: ", msg)
+
+	res, err := api.ApiV1MessagesPost(config.apiKey, swagger.Message{
+		Body: msg,
+		To:   []string{to},
+	})
+
+	if err != nil {
+		log.Print("Error sending message request ", err)
+	} else {
+		log.Print("Sent message id:", res)
+	}
+}
+
+func decode(body io.Reader) (error, IncomingMessage) {
+	decoder := json.NewDecoder(body)
+	var jsonMsg IncomingMessage
+	err := decoder.Decode(&jsonMsg)
+
+	return err, jsonMsg
 }

@@ -20,7 +20,7 @@ func main() {
 	}
 
 	api := swagger.NewDefaultApiWithBasePath(host)
-	s := NewServer(&apiKey, api)
+	s := NewServer(apiKey, api)
 
 	log.Print("Starting server")
 	// Binds to $PORT
