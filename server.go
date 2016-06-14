@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-martini/martini"
-	"github.com/ngti/echo_bot/chatbots"
+	"github.com/ngti/echo_bot/bots"
 	"github.com/ngti/echo_bot/swagger"
 )
 
@@ -31,7 +31,7 @@ type config struct {
 func NewServer(apiKey string, api *swagger.DefaultApi) *Server {
 	m := martini.Classic()
 
-	bot := bots.NewEchoBot()
+	bot := bots.NewEchoBot("Hi!")
 	conf := &config{apiKey, *bot}
 	m.Map(api)
 	m.Map(conf)

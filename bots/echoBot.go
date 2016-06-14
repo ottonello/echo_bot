@@ -1,4 +1,4 @@
-package chatbots
+package bots
 
 type EchoBot struct {
 	initialMessage string
